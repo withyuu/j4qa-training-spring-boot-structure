@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.ascend.training.j4qa</groupId>
+    <artifactId>spring-boot-structure</artifactId>
+    <version>0.1.0</version>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.5.7.RELEASE</version>
+    </parent>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
+    </dependencies>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <rpm.username>appuser</rpm.username>
+        <rpm.groupname>appuser</rpm.groupname>
+    </properties>
+
+
+    <build>
+        <finalName>spring-boot-structure</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.7.0</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>rpm-maven-plugin</artifactId>
+                <version>2.1.4</version>
+                <configuration>
+                    <copyright>2016, Ascend corp.</copyright>
+                    <group>development</group>
+                    <description>${project.artifactId} rpm</description>
+                    <defaultDirmode>775</defaultDirmode>
+                    <defaultFilemode>664</defaultFilemode>
+                    <defaultUsername>${rpm.username}</defaultUsername>
+                    <defaultGroupname>${rpm.groupname}</defaultGroupname>
+                    <defineStatements>
+                        <defineStatement>_binaries_in_noarch_packages_terminate_build 0</defineStatement>
+                    </defineStatements>
+                    <mappings>
+                        <mapping>
+                            <directory>/data/projects</directory>
+                        </mapping>
+                        <mapping>
+                            <directory>/data/projects/${project.artifactId}</directory>
+                            <sources>
+                                <source>
+                                    <location>${project.build.directory}/${project.artifactId}.jar</location>
+                                </source>
+                            </sources>
+                        </mapping>
+                        <mapping>
+                            <directory>/data/logs/${project.artifactId}</directory>
+                            <filemode>775</filemode>
+                        </mapping>
+                    </mappings>
+                    <postinstallScriptlet>
+                        <script>
+                            <![CDATA[chmod +x /data/projects/${project.artifactId}/${project.artifactId}.jar]]></script>
+                    </postinstallScriptlet>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>generate-rpm</id>
+                        <phase>${rpm.phase}</phase>
+                        <goals>
+                            <goal>rpm</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <repositories>
+        <repository>
+            <id>spring-releases</id>
+            <url>https://repo.spring.io/libs-release</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>spring-releases</id>
+            <url>https://repo.spring.io/libs-release</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <rpm.phase>none</rpm.phase>
+            </properties>
+        </profile>
+        <profile>
+            <id>ci</id>
+            <properties>
+                <rpm.phase>package</rpm.phase>
+            </properties>
+        </profile>
+    </profiles>
+</project>
