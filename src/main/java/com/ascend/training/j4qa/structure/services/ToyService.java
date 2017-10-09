@@ -1,6 +1,7 @@
 package com.ascend.training.j4qa.structure.services;
 
 import com.ascend.training.j4qa.structure.entities.Toy;
+import com.ascend.training.j4qa.structure.exceptions.ToyNotFoundException;
 import com.ascend.training.j4qa.structure.repositories.ToyRepository;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +22,11 @@ public class ToyService {
         return toyRepository.findAll();
     }
 
-    public Toy getToy(Long id) {
-        Toy t = toyRepository.findOne(id); // TODO handle null
+    public Toy getToy(Long id) throws ToyNotFoundException {
+        Toy t = toyRepository.findOne(id);
+        if (t == null) {
+            throw new ToyNotFoundException();
+        }
         return t;
     }
 

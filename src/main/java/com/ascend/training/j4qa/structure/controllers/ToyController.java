@@ -2,7 +2,10 @@ package com.ascend.training.j4qa.structure.controllers;
 
 import java.util.List;
 
+import com.ascend.training.j4qa.structure.Application;
+import com.ascend.training.j4qa.structure.configs.ApplicationConfiguration;
 import com.ascend.training.j4qa.structure.constants.ResponseStatus;
+import com.ascend.training.j4qa.structure.exceptions.ToyNotFoundException;
 import com.ascend.training.j4qa.structure.models.StandardResponse;
 import com.ascend.training.j4qa.structure.entities.Toy;
 import com.ascend.training.j4qa.structure.services.ToyService;
@@ -19,9 +22,12 @@ public class ToyController {
 
     private ToyService toyService;
 
+    private ApplicationConfiguration configurations;
+
     @Autowired
-    public ToyController(ToyService toyService) {
+    public ToyController(ToyService toyService, ApplicationConfiguration configurations) {
         this.toyService = toyService;
+        this.configurations = configurations;
     }
 
     @GetMapping("/toys")
@@ -43,6 +49,11 @@ public class ToyController {
         return new StandardResponse(ResponseStatus.SUCCESS, "DONE");
     }
 
+    @GetMapping("/help")
+    public String help() {
+        return "Any question, please contact " + configurations.getContact();
+    }
+
     @ExceptionHandler
     @org.springframework.web.bind.annotation.ResponseStatus(HttpStatus.BAD_REQUEST)
     public StandardResponse handleException(MethodArgumentNotValidException exception) {
@@ -53,5 +64,11 @@ public class ToyController {
                 .orElse(exception.getMessage());
 
         return new StandardResponse(ResponseStatus.ERROR, errorMsg);
+    }
+
+    @ExceptionHandler
+    @org.springframework.web.bind.annotation.ResponseStatus(HttpStatus.NOT_FOUND)
+    public StandardResponse handleException(ToyNotFoundException exception) {
+        return new StandardResponse(ResponseStatus.ERROR, "Toy not found");
     }
 }
