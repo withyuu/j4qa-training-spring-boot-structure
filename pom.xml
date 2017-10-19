@@ -66,7 +66,6 @@
                 <artifactId>rpm-maven-plugin</artifactId>
                 <version>2.1.4</version>
                 <configuration>
-                    <copyright>2016, Ascend corp.</copyright>
                     <group>development</group>
                     <description>${project.artifactId} rpm</description>
                     <defaultDirmode>775</defaultDirmode>

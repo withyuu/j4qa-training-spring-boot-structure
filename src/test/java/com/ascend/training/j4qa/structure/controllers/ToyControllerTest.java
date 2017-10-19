@@ -1,5 +1,6 @@
 package com.ascend.training.j4qa.structure.controllers;
 
+import com.ascend.training.j4qa.structure.configs.ApplicationConfiguration;
 import com.ascend.training.j4qa.structure.entities.Toy;
 import com.ascend.training.j4qa.structure.services.ToyService;
 import org.hamcrest.Matchers;
@@ -31,6 +32,9 @@ public class ToyControllerTest {
 
     @MockBean
     private ToyService toyService;
+
+    @MockBean
+    private ApplicationConfiguration config;
 
     @Test
     public void givenToys_whenGetToys_thenReturnJsonArray() throws Exception {
